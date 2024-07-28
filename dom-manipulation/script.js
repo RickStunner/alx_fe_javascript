@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", category: "Motivation" }
     ];
 
+    // Get the last selected category from local storage
+    let lastSelectedCategory = localStorage.getItem('selectedCategory') || 'all';
+
     const quoteDisplay = document.getElementById('quoteDisplay');
     const newQuoteButton = document.getElementById('newQuote');
     const addQuoteButton = document.getElementById('addQuoteButton');
@@ -13,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const newQuoteCategory = document.getElementById('newQuoteCategory');
     const exportButton = document.getElementById('exportButton');
     const importFile = document.getElementById('importFile');
+    const categoryFilter = document.getElementById('categoryFilter');
 
     // Function to save quotes to local storage
     function saveQuotes() {
@@ -44,11 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Save quotes to local storage
             saveQuotes();
 
+            // Update categories and filter options
+            updateCategoryFilter();
+
             // Clear the input fields
             newQuoteText.value = '';
             newQuoteCategory.value = '';
 
-            // Optionally update the DOM or show a confirmation
             alert('Quote added successfully!');
         } else {
             alert('Please enter both a quote and a category.');
@@ -70,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         linkElement.click();
         document.body.removeChild(linkElement); // Remove from body after clicking
 
-        // Release the URL object
         URL.revokeObjectURL(url);
     }
 
@@ -81,9 +86,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const importedQuotes = JSON.parse(event.target.result);
             quotes.push(...importedQuotes);
             saveQuotes();
+            updateCategoryFilter();
             alert('Quotes imported successfully!');
         };
         fileReader.readAsText(event.target.files[0]);
+    }
+
+    // Function to populate the category filter dropdown
+    function updateCategoryFilter() {
+        const categories = new Set(quotes.map(q => q.category));
+        categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            categoryFilter.appendChild(option);
+        });
+        categoryFilter.value = lastSelectedCategory;
+    }
+
+    // Function to filter quotes based on selected category
+    function filterQuotes() {
+        const selectedCategory = categoryFilter.value;
+        localStorage.setItem('selectedCategory', selectedCategory);
+        lastSelectedCategory = selectedCategory;
+        if (selectedCategory === 'all') {
+            showRandomQuote();
+        } else {
+            const filteredQuotes = quotes.filter(q => q.category === selectedCategory);
+            if (filteredQuotes.length > 0) {
+                const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+                const quote = filteredQuotes[randomIndex];
+                quoteDisplay.innerHTML = `<p>${quote.text}</p><p><em>- ${quote.category}</em></p>`;
+            } else {
+                quoteDisplay.textContent = "No quotes available for this category.";
+            }
+        }
     }
 
     // Event listeners
@@ -91,7 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
     addQuoteButton.addEventListener('click', createAddQuoteForm);
     exportButton.addEventListener('click', exportToJson);
     importFile.addEventListener('change', importFromJsonFile);
+    categoryFilter.addEventListener('change', filterQuotes);
 
-    // Initial display of a random quote
-    showRandomQuote();
+    // Initial setup
+    updateCategoryFilter();
+    filterQuotes(); // Apply the last selected filter
 });
