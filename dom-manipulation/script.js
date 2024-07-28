@@ -24,15 +24,25 @@ document.addEventListener('DOMContentLoaded', () => {
         quoteDisplay.innerHTML = `<p>${quote.text}</p><p><em>- ${quote.category}</em></p>`;
     }
 
-    // Function to add a new quote
-    function createAddQuoteForm() {
+    // Function to add a new quote and update the DOM
+    function addQuote() {
         const text = newQuoteText.value.trim();
         const category = newQuoteCategory.value.trim();
 
         if (text && category) {
-            quotes.push({ text, category });
+            // Add the new quote to the quotes array
+            const newQuote = { text, category };
+            quotes.push(newQuote);
+
+            // Clear the input fields
             newQuoteText.value = '';
             newQuoteCategory.value = '';
+
+            // Update the DOM with the new quote
+            const newQuoteElement = document.createElement('div');
+            newQuoteElement.innerHTML = `<p>${newQuote.text}</p><p><em>- ${newQuote.category}</em></p>`;
+            quoteDisplay.appendChild(newQuoteElement);
+
             alert('Quote added successfully!');
         } else {
             alert('Please enter both a quote and a category.');
@@ -41,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listeners
     newQuoteButton.addEventListener('click', showRandomQuote);
-    addQuoteButton.addEventListener('click', createAddQuoteForm);
+    addQuoteButton.addEventListener('click', addQuote);
 
     // Initial display of a random quote
     showRandomQuote();
