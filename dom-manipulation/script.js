@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to add a new quote
-    function addQuote() {
+    function createAddQuoteForm() {
         const text = newQuoteText.value.trim();
         const category = newQuoteCategory.value.trim();
 
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listeners
     newQuoteButton.addEventListener('click', showRandomQuote);
-    addQuoteButton.addEventListener('click', addQuote);
+    addQuoteButton.addEventListener('click', createAddQuoteForm);
 
     // Initial display of a random quote
     showRandomQuote();
