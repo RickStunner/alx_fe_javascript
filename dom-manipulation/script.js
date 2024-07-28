@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to add a new quote and update the DOM
-    function addQuote() {
+    function createAddQuoteForm() {
         const text = newQuoteText.value.trim();
         const category = newQuoteCategory.value.trim();
 
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             newQuoteText.value = '';
             newQuoteCategory.value = '';
 
-            // Update the DOM with the new quote
+            // Create and append the new quote element to the DOM
             const newQuoteElement = document.createElement('div');
             newQuoteElement.innerHTML = `<p>${newQuote.text}</p><p><em>- ${newQuote.category}</em></p>`;
             quoteDisplay.appendChild(newQuoteElement);
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listeners
     newQuoteButton.addEventListener('click', showRandomQuote);
-    addQuoteButton.addEventListener('click', addQuote);
+    addQuoteButton.addEventListener('click', createAddQuoteForm);
 
     // Initial display of a random quote
     showRandomQuote();
