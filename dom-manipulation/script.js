@@ -46,14 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                },
                 body: JSON.stringify({
                     title: quote.text,
                     body: '',
                     userId: 1
-                }),
-                headers: {
-                    'Content-type': 'application/json; charset=UTF-8'
-                }
+                })
             });
             const serverQuote = await response.json();
             return {
