@@ -6,6 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 3, text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", category: "Motivation" }
     ];
 
+    const notificationArea = document.getElementById('notificationArea');
+    const quoteDisplay = document.getElementById('quoteDisplay');
+    const newQuoteButton = document.getElementById('newQuote');
+    const addQuoteButton = document.getElementById('addQuoteButton');
+    const newQuoteText = document.getElementById('newQuoteText');
+    const newQuoteCategory = document.getElementById('newQuoteCategory');
+    const exportButton = document.getElementById('exportButton');
+    const importFile = document.getElementById('importFile');
+    const categoryFilter = document.getElementById('categoryFilter');
+
     // Fetching quotes from the server
     async function fetchQuotesFromServer() {
         try {
@@ -22,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return formattedQuotes;
         } catch (error) {
             console.error('Failed to fetch quotes from server:', error);
+            displayNotification('Failed to fetch quotes from server.', 'error');
             return [];
         }
     }
@@ -37,7 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
             quotes = [...quotes, ...newQuotes];
             saveQuotes();
             populateCategories();
-            alert('New quotes have been added from the server.');
+            displayNotification('Quotes synced with server!', 'success');
+        } else {
+            displayNotification('No new quotes from server.', 'info');
         }
     }
 
@@ -63,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         } catch (error) {
             console.error('Failed to add quote to the server:', error);
+            displayNotification('Failed to add quote to the server.', 'error');
             return null;
         }
     }
@@ -98,6 +112,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Function to display notifications
+    function displayNotification(message, type) {
+        notificationArea.textContent = message;
+        notificationArea.className = type;
+        setTimeout(() => {
+            notificationArea.textContent = '';
+            notificationArea.className = '';
+        }, 5000);
+    }
+
     // Populate categories in the dropdown
     function populateCategories() {
         const categories = new Set(quotes.map(q => q.category));
@@ -108,14 +132,13 @@ document.addEventListener('DOMContentLoaded', () => {
             option.textContent = category;
             categoryFilter.appendChild(option);
         });
-        categoryFilter.value = lastSelectedCategory;
+        categoryFilter.value = localStorage.getItem('selectedCategory') || 'all';
     }
 
     // Filter quotes based on selected category
     function filterQuotes() {
         const selectedCategory = categoryFilter.value;
         localStorage.setItem('selectedCategory', selectedCategory);
-        lastSelectedCategory = selectedCategory;
 
         const filteredQuotes = selectedCategory === 'all' ?
             quotes :
@@ -135,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
     filterQuotes();
 
     // Event listeners
-    newQuoteButton.addEventListener('click', showRandomQuote);
+    newQuoteButton.addEventListener('click', filterQuotes);
     addQuoteButton.addEventListener('click', createAddQuoteForm);
     exportButton.addEventListener('click', exportToJson);
     importFile.addEventListener('change', importFromJsonFile);
